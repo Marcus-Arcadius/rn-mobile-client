@@ -1,7 +1,7 @@
 import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
 import nodejs from 'nodejs-mobile-react-native';
-import { registerOneTimeListener } from '../eventListenerMiddleware';
-import { FileFetchedPayload } from '../fileFetchedMiddleware';
+import { registerOneTimeListener } from '../middlewares/eventListenerMiddleware';
+import { FileFetchedPayload } from '../middlewares/fileFetchedMiddleware';
 import { createNodeCalloutAsyncThunk } from '../util/nodeActions';
 import { accountLogout } from './account';
 import { FolderName, getFolderIdByName } from './mailSelectors';

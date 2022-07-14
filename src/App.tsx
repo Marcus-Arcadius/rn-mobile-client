@@ -10,7 +10,7 @@ import React from 'react';
 import { store } from './store';
 import { Provider } from 'react-redux';
 import { ListenerContainer } from './ListenerContainer';
-import { Navigator } from './Navigator';
+import { Navigator } from './navigators/Navigator';
 import { getStoredUsernames } from './store/account';
 import { StatusBar } from 'react-native';
 

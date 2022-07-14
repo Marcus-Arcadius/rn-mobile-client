@@ -14,7 +14,7 @@ import * as Yup from 'yup';
 import { Modalize } from 'react-native-modalize';
 import { Portal } from 'react-native-portalize';
 
-import { RootStackParams } from '../Navigator';
+import { RootStackParams } from '../navigators/Navigator';
 import { colors } from '../util/colors';
 import { borderRadius, spacing } from '../util/spacing';
 import { fonts } from '../util/fonts';

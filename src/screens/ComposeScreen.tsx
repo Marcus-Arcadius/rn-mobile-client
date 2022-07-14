@@ -4,7 +4,7 @@ import { format, formatISO, isToday } from 'date-fns';
 import Toast from 'react-native-toast-message';
 
 import { Alert, FlatList, ScrollView, Text, View } from 'react-native';
-import { MainStackParams, RootStackParams } from '../Navigator';
+import { MainStackParams, RootStackParams } from '../navigators/Navigator';
 import { TextInput } from 'react-native-gesture-handler';
 import { spacing } from '../util/spacing';
 import { colors } from '../util/colors';

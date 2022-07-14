@@ -2,8 +2,8 @@ import React from 'react';
 import { CompositeScreenProps } from '@react-navigation/native';
 import { useHeaderHeight } from '@react-navigation/elements';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
-import { ScrollView, Text, View } from 'react-native';
-import { MainStackParams, RootStackParams } from '../Navigator';
+import { ScrollView, View } from 'react-native';
+import { MainStackParams, RootStackParams } from '../navigators/Navigator';
 import { useAppDispatch } from '../hooks';
 import { colors } from '../util/colors';
 import { TableCell } from '../components/TableCell';
@@ -15,12 +15,16 @@ export type ProfileScreenProps = CompositeScreenProps<
   NativeStackScreenProps<RootStackParams>
 >;
 
-export const ProfileScreen = (props: ProfileScreenProps) => {
+export const ProfileScreen = ({ navigation }: ProfileScreenProps) => {
   const dispatch = useAppDispatch();
   const headerHeight = useHeaderHeight();
 
   const onLogout = () => {
     dispatch(accountLogout());
+  };
+
+  const onPressSyncAccount = () => {
+    navigation.navigate('profileSync');
   };
 
   return (
@@ -29,6 +33,11 @@ export const ProfileScreen = (props: ProfileScreenProps) => {
       contentContainerStyle={{ marginTop: headerHeight }}>
       <View
         style={{ marginHorizontal: spacing.lg, marginVertical: spacing.lg }}>
+        <TableCell
+          label="Sync New Device"
+          onPress={onPressSyncAccount}
+          iconLeft={{ name: 'sync' }}
+        />
         <TableCell
           label="Log Out"
           onPress={onLogout}

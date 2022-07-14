@@ -6,51 +6,55 @@ import {
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { createDrawerNavigator } from '@react-navigation/drawer';
 
-import { IntroScreen } from './screens/IntroScreen';
-import { LoginScreen } from './screens/LoginScreen';
-import { InboxScreen } from './screens/InboxScreen';
-import { useAppSelector, useIsAuthenticated } from './hooks';
-import { DrawerContent } from './components/DrawerContent';
-import { ComposeScreen } from './screens/ComposeScreen';
-import { TestScreen } from './screens/TestScreen';
-import { colors } from './util/colors';
-import { RegisterConsentScreen } from './screens/RegisterConsentScreen';
-import { RegisterUsernameScreen } from './screens/RegisterUsernameScreen';
-import { RegisterPasswordScreen } from './screens/RegisterPasswordScreen';
-import { RegisterRecoveryEmailScreen } from './screens/RegisterRecoveryEmailScreen';
-import { RegisterSuccessScreen } from './screens/RegisterSuccessScreen';
-import { SearchScreen } from './screens/SearchScreen';
-import { NavIconButton } from './components/NavIconButton';
-import { DraftsScreen } from './screens/DraftsScreen';
-import { SentScreen } from './screens/SentScreen';
-import { TrashScreen } from './screens/TrashScreen';
-import { ProfileScreen } from './screens/ProfileScreen';
-import { AliasManageScreen } from './screens/AliasManageScreen';
-import { NewAliasNamespaceScreen } from './screens/NewAliasNamespaceScreen';
-import { NewAliasScreen } from './screens/NewAliasScreen';
-import { EmailDetailScreen } from './screens/EmailDetailScreen';
+import { IntroScreen } from '../screens/IntroScreen';
+import { LoginScreen } from '../screens/LoginScreen';
+import { InboxScreen } from '../screens/InboxScreen';
+import { useAppSelector, useIsAuthenticated } from '../hooks';
+import { DrawerContent } from '../components/DrawerContent';
+import { ComposeScreen } from '../screens/ComposeScreen';
+import { TestScreen } from '../screens/TestScreen';
+import { colors } from '../util/colors';
+import { RegisterConsentScreen } from '../screens/RegisterConsentScreen';
+import { RegisterUsernameScreen } from '../screens/RegisterUsernameScreen';
+import { RegisterPasswordScreen } from '../screens/RegisterPasswordScreen';
+import { RegisterRecoveryEmailScreen } from '../screens/RegisterRecoveryEmailScreen';
+import { RegisterSuccessScreen } from '../screens/RegisterSuccessScreen';
+import { SearchScreen } from '../screens/SearchScreen';
+import { NavIconButton } from '../components/NavIconButton';
+import { DraftsScreen } from '../screens/DraftsScreen';
+import { SentScreen } from '../screens/SentScreen';
+import { TrashScreen } from '../screens/TrashScreen';
+import { ProfileScreen } from '../screens/ProfileScreen';
+import { AliasManageScreen } from '../screens/AliasManageScreen';
+import { NewAliasNamespaceScreen } from '../screens/NewAliasNamespaceScreen';
+import { NewAliasScreen } from '../screens/NewAliasScreen';
+import { EmailDetailScreen } from '../screens/EmailDetailScreen';
 import RNBootSplash from 'react-native-bootsplash';
 import { Platform } from 'react-native';
-import ForgotPassword from './screens/ForgotPassword';
-import RecoverAccount from './screens/RecoverAccount';
-import RecoverAccountCode from './screens/RecoverAccountCode';
-import EnterNewPassword from './screens/EnterNewPassword';
+import Sync, { SyncStackParams } from './Sync';
+import backArrow from './utils/backArrow';
+import ProfileSyncAccount from '../screens/ProfileSyncAccount';
+import RecoveryAccount, { RecoveryAccountStackParams } from './RecoveryAccount';
 
 export type CoreStackProps = {
-  register: undefined;
-  core: undefined;
+  register: NavigatorScreenParams<RegisterStackParams> | undefined;
+  core: NavigatorScreenParams<RootStackParams> | undefined;
 };
 
 export type RootStackParams = {
   test: undefined;
   intro: undefined;
   login: undefined;
-  main: undefined;
-  register: NavigatorScreenParams<RegisterStackParams> | undefined;
+  main: NavigatorScreenParams<MainStackParams> | undefined;
   compose: undefined;
   search: undefined;
+  profileSync: undefined;
   newAliasNamespace: undefined;
   newAlias: undefined;
+  recoveryAccount:
+    | NavigatorScreenParams<RecoveryAccountStackParams>
+    | undefined;
+  sync: NavigatorScreenParams<SyncStackParams> | undefined;
 };
 
 export type RegisterStackParams = {
@@ -63,10 +67,6 @@ export type RegisterStackParams = {
     password: string;
   };
   registerSuccess: undefined;
-  forgotPassword: undefined;
-  enterNewPassword: { passphrase?: string; hasValidCode?: boolean };
-  recoverAccount: undefined;
-  recoverAccountCode: { recoveryEmail: string };
 };
 
 export type MainStackParams = {
@@ -88,15 +88,6 @@ const CoreStack = createNativeStackNavigator<CoreStackProps>();
 const Stack = createNativeStackNavigator<RootStackParams>();
 const RegisterStack = createNativeStackNavigator<RegisterStackParams>();
 const Drawer = createDrawerNavigator<MainStackParams>();
-
-const showBackArrow = ({ navigation }: any) => ({
-  headerLeft: () => (
-    <NavIconButton
-      icon={{ name: 'chevron-back', size: 28 }}
-      onPress={() => navigation.goBack()}
-    />
-  ),
-});
 
 const InboxStack = createNativeStackNavigator<InboxStackParams>();
 const InboxRoot = () => (
@@ -168,7 +159,19 @@ function CoreScreen() {
                 ),
               })}
             />
-
+            <Stack.Screen
+              name="profileSync"
+              component={ProfileSyncAccount}
+              options={({ navigation }) => ({
+                title: 'Sync New Device',
+                headerLeft: () => (
+                  <NavIconButton
+                    icon={{ name: 'close-outline', size: 28 }}
+                    onPress={() => navigation.goBack()}
+                  />
+                ),
+              })}
+            />
             <Stack.Screen
               name="newAliasNamespace"
               component={NewAliasNamespaceScreen}
@@ -213,6 +216,22 @@ function CoreScreen() {
             name="test"
             component={TestScreen}
             options={{ title: 'Test' }}
+          />
+          <Stack.Screen
+            name="recoveryAccount"
+            component={RecoveryAccount}
+            options={navigation => ({
+              ...backArrow(navigation),
+              headerShown: false,
+            })}
+          />
+          <Stack.Screen
+            name="sync"
+            component={Sync}
+            options={navigation => ({
+              ...backArrow(navigation),
+              headerShown: false,
+            })}
           />
         </>
       )}
@@ -303,26 +322,6 @@ function Register() {
           headerBackVisible: false,
           gestureEnabled: false,
         }}
-      />
-      <RegisterStack.Screen
-        name="forgotPassword"
-        component={ForgotPassword}
-        options={showBackArrow}
-      />
-      <RegisterStack.Screen
-        name="enterNewPassword"
-        component={EnterNewPassword}
-        options={showBackArrow}
-      />
-      <RegisterStack.Screen
-        name="recoverAccount"
-        component={RecoverAccount}
-        options={showBackArrow}
-      />
-      <RegisterStack.Screen
-        name="recoverAccountCode"
-        component={RecoverAccountCode}
-        options={showBackArrow}
       />
     </RegisterStack.Navigator>
   );

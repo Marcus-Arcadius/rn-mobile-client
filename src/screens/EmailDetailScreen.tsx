@@ -8,7 +8,7 @@ import {
   InboxStackParams,
   MainStackParams,
   RootStackParams,
-} from '../Navigator';
+} from '../navigators/Navigator';
 import { TextInput } from 'react-native-gesture-handler';
 import { spacing } from '../util/spacing';
 import { colors } from '../util/colors';

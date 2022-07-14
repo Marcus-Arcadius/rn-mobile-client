@@ -9,7 +9,7 @@ import {
   StyleProp,
   Alert,
 } from 'react-native';
-import { MainStackParams, RootStackParams } from '../Navigator';
+import { MainStackParams, RootStackParams } from '../navigators/Navigator';
 import { TableCell } from '../components/TableCell';
 import { colors } from '../util/colors';
 import { spacing } from '../util/spacing';

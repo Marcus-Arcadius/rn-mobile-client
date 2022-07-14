@@ -7,7 +7,7 @@ import { Modalize } from 'react-native-modalize';
 
 import { Button } from '../components/Button';
 import { Input } from '../components/Input';
-import { RegisterStackParams, RootStackParams } from '../Navigator';
+import { RegisterStackParams } from '../navigators/Navigator';
 import { fonts } from '../util/fonts';
 import { spacing } from '../util/spacing';
 import { colors } from '../util/colors';

@@ -65,7 +65,6 @@ export type LoginAccount = {
 interface AccountState {
   localUsernames: string[];
   lastUsername?: string;
-
   signupAccount?: SignupAccount;
   loginAccount?: LoginAccount;
 }

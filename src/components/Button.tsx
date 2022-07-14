@@ -7,6 +7,7 @@ import {
   ViewStyle,
   TextStyle,
   View,
+  StyleSheet,
 } from 'react-native';
 import { colors } from '../util/colors';
 import { fonts } from '../util/fonts';
@@ -20,6 +21,7 @@ export interface ButtonProps {
   type?: 'primary' | 'secondary' | 'outline' | 'text';
   size?: 'block' | 'large' | 'small';
   iconRight?: IconAccessory;
+  iconLeft?: IconAccessory;
   disabled?: boolean;
   loading?: boolean;
   style?: StyleProp<ViewStyle>;
@@ -32,6 +34,7 @@ export const Button = (props: ButtonProps) => {
     type = 'primary',
     size = 'block',
     iconRight,
+    iconLeft,
     disabled = false,
     loading = false,
     style,
@@ -57,54 +60,77 @@ export const Button = (props: ButtonProps) => {
 
   const textColor = type === 'primary' ? colors.white : colors.primaryBase;
 
+  const styles = StyleSheet.create({
+    container: {
+      backgroundColor: getBgColor() || undefined,
+      paddingHorizontal:
+        type === 'text' ? 0 : size === 'small' ? spacing.md : spacing.xl,
+      paddingVertical: size === 'small' ? spacing.sm : spacing.md,
+      borderRadius: 30,
+      opacity: loading ? 0.5 : 1,
+      justifyContent: 'center',
+      alignContent: 'center',
+      flexDirection: 'row',
+      height: size === 'block' || size === 'large' ? 55 : undefined,
+      alignSelf: size === 'block' ? 'stretch' : 'auto',
+      borderWidth: type === 'outline' ? 1 : 0,
+      borderColor: colors.primaryBase,
+    },
+    leftContainer: {
+      position: 'absolute',
+      left: spacing.md,
+      alignSelf: 'center',
+    },
+    centerContainer: {
+      justifyContent: 'center',
+      alignContent: 'center',
+      flexDirection: 'row',
+    },
+    titleContainer: { justifyContent: 'center', alignItems: 'center' },
+  });
+
   return (
     <TouchableOpacity
       disabled={loading || disabled}
-      style={[
-        {
-          backgroundColor: getBgColor() || undefined,
-          paddingHorizontal:
-            type === 'text' ? 0 : size === 'small' ? spacing.md : spacing.xl,
-          paddingVertical: size === 'small' ? spacing.sm : spacing.md,
-          borderRadius: 30,
-          opacity: loading ? 0.5 : 1,
-          justifyContent: 'center',
-          alignContent: 'center',
-          flexDirection: 'row',
-          height: size === 'block' || size === 'large' ? 55 : undefined,
-          alignSelf: size === 'block' ? 'stretch' : 'auto',
-          borderWidth: type === 'outline' ? 1 : 0,
-          borderColor: colors.primaryBase,
-        },
-        style,
-      ]}
+      style={[styles.container, style]}
       onPress={onPress}>
-      {loading ? (
-        <ActivityIndicator />
-      ) : (
-        <View style={{ justifyContent: 'center', alignItems: 'center' }}>
-          <Text
-            numberOfLines={1}
-            style={[
-              fonts.regular.medium,
-              {
-                color: textColor,
-              },
-              titleStyle,
-            ]}>
-            {title}
-          </Text>
-        </View>
-      )}
-      {iconRight && (
-        <View style={{ marginLeft: spacing.sm }}>
+      {iconLeft && (
+        <View style={styles.leftContainer}>
           <Icon
-            name={iconRight.name}
-            color={iconRight.color || textColor}
-            size={iconRight.size || 22}
+            name={iconLeft.name}
+            color={iconLeft.color || textColor}
+            size={iconLeft.size || 22}
           />
         </View>
       )}
+      <View style={styles.centerContainer}>
+        {loading ? (
+          <ActivityIndicator />
+        ) : (
+          <View style={styles.titleContainer}>
+            <Text
+              numberOfLines={1}
+              style={[
+                fonts.regular.medium,
+                {
+                  color: textColor,
+                },
+                titleStyle,
+              ]}>
+              {title}
+            </Text>
+          </View>
+        )}
+        {iconRight && (
+          <View style={{ marginLeft: spacing.sm }}>
+            <Icon
+              name={iconRight.name}
+              color={iconRight.color || textColor}
+              size={iconRight.size || 22}
+            />
+          </View>
+        )}
+      </View>
     </TouchableOpacity>
   );
 };

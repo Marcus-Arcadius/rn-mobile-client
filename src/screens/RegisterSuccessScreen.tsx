@@ -5,11 +5,7 @@ import * as Clipboard from 'expo-clipboard';
 import React from 'react';
 import { View, Text, ScrollView } from 'react-native';
 import { Button } from '../components/Button';
-import {
-  CoreStackProps,
-  RegisterStackParams,
-  RootStackParams,
-} from '../Navigator';
+import { CoreStackProps, RegisterStackParams } from '../navigators/Navigator';
 import { fonts } from '../util/fonts';
 import { borderRadius, spacing } from '../util/spacing';
 import { colors } from '../util/colors';

@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { Alert, ScrollView, Text, View } from 'react-native';
 
-import { RootStackParams } from '../Navigator';
+import { RootStackParams } from '../navigators/Navigator';
 import { colors } from '../util/colors';
 import { borderRadius, spacing } from '../util/spacing';
 import { fonts } from '../util/fonts';
