@@ -40,7 +40,6 @@ export const MailList = ({
   items,
   navigation,
   onRefresh,
-  refreshEnabled,
   headerComponent,
   renderNavigationTitle,
   loading,
@@ -71,10 +70,11 @@ export const MailList = ({
   const onListRefresh = async () => {
     setIsRefreshing(true);
     try {
-      await onRefresh();
+      await onRefresh?.();
     } catch (e) {
       setIsRefreshing(false);
     }
+    setIsRefreshing(false);
   };
 
   const listData = [...items];
@@ -93,11 +93,12 @@ export const MailList = ({
     if (item.id === 'MAIL_EMPTY') {
       return <EmptyComponent />;
     } else {
-      return <EmailCell email={item.mail} onPress={item.onSelect} />;
+      return item?.mail ? (
+        <EmailCell email={item.mail} onPress={item.onSelect} />
+      ) : null;
     }
   };
 
-  // TODO: hook these up
   const renderFilterHeader = () => {
     if (disableUnreadFilters) {
       return <View style={styles.disableFilterOptions} />;
@@ -105,7 +106,10 @@ export const MailList = ({
     return (
       <View style={styles.filterOptionsContainer}>
         {Object.keys(FilterOption)?.map(key =>
-          filterOptionsItem(FilterOption[key], true),
+          filterOptionsItem(
+            FilterOption[key as keyof typeof FilterOption],
+            true,
+          ),
         )}
       </View>
     );

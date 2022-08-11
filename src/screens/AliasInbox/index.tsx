@@ -2,45 +2,42 @@ import React from 'react';
 import { NativeStackScreenProps } from '@react-navigation/native-stack';
 import { View } from 'react-native';
 import { useAppDispatch, useAppSelector } from '../../hooks';
-import { useSelector } from 'react-redux';
-import {
-  FolderName,
-  getFolderIdByName,
-  inboxMailListSelector,
-} from '../../store/selectors/mail';
-import { getMailByFolder, getNewMailFlow } from '../../store/mail';
+import { aliasesMailListSelector } from '../../store/selectors/mail';
+// @ts-ignore
+import envApi from '../../../env_api.json';
+import { getMessagesByAliasId } from '../../store/mail';
 import { MailList, MailListItem } from '../../components/MailList';
 import { MailListHeader } from '../../components/MailListHeader';
 import { NavTitle } from '../../components/NavTitle';
 import { ComposeNewEmailButton } from '../../components/ComposeNewEmailButton';
 import { MainStackParams, RootStackParams } from '../../Navigator';
 import { CompositeScreenProps } from '@react-navigation/native';
+import { aliasSelectors } from '../../store/adapters/aliases';
+import { RootState } from '../../store';
 
 export type AliasInboxScreenProps = CompositeScreenProps<
   NativeStackScreenProps<MainStackParams, 'aliasInbox'>,
   NativeStackScreenProps<RootStackParams>
 >;
 
-// TODO screen is duplicated, it's a sample
 export const AliasInboxScreen = ({
   navigation,
   route,
 }: AliasInboxScreenProps) => {
   const aliasId = route.params.aliasId;
+  const alias = useAppSelector((state: RootState) =>
+    aliasSelectors.selectById(state.aliases, aliasId),
+  );
   const mail = useAppSelector(state => state.mail);
   const dispatch = useAppDispatch();
-  const inboxMailList = useSelector(inboxMailListSelector);
-
-  React.useLayoutEffect(() => {
-    const inboxFolderId = getFolderIdByName(mail, FolderName.inbox);
-    if (!inboxFolderId) {
-      return;
-    }
-    dispatch(getMailByFolder({ id: inboxFolderId }));
-  }, [mail.folders]);
+  const inboxMailList = useAppSelector(state =>
+    aliasesMailListSelector(state, aliasId),
+  );
 
   const onRefresh = async () => {
-    await dispatch(getNewMailFlow());
+    if (alias?.aliasId) {
+      await dispatch(getMessagesByAliasId({ id: alias.aliasId }));
+    }
   };
 
   const onNewEmail = () => {
@@ -54,23 +51,28 @@ export const AliasInboxScreen = ({
     });
   };
 
-  const listData: MailListItem[] = inboxMailList.map(
-    (item: { emailId: string }) => ({
-      id: item.emailId,
-      mail: item,
-      onSelect: () => onSelectEmail(item.emailId),
-    }),
-  );
+  const listData: MailListItem[] = inboxMailList.map(item => ({
+    id: item.emailId,
+    mail: item,
+    onSelect: () => onSelectEmail(item.emailId),
+  }));
+
+  if (!alias) {
+    return null;
+  }
 
   const renderHeader = () => (
-    <MailListHeader title="Inbox" subtitle={aliasId} />
+    <MailListHeader
+      title={`# ${alias.name}`}
+      subtitle={`${alias.aliasId}@${envApi.postfix}`}
+    />
   );
 
   return (
     <View style={{ flex: 1 }}>
       <MailList
         navigation={navigation}
-        renderNavigationTitle={() => <NavTitle>{'Inbox'}</NavTitle>}
+        renderNavigationTitle={() => <NavTitle>{`# ${alias.name}`}</NavTitle>}
         headerComponent={renderHeader}
         loading={mail.loadingGetMailMeta}
         onRefresh={onRefresh}

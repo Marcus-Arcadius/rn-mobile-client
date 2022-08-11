@@ -1,4 +1,4 @@
-import { createSlice, createAsyncThunk, PayloadAction } from '@reduxjs/toolkit';
+import { createAsyncThunk, createSlice, PayloadAction } from '@reduxjs/toolkit';
 import nodejs from 'nodejs-mobile-react-native';
 import { registerOneTimeListener } from '../eventListenerMiddleware';
 import { FileFetchedPayload } from '../fileFetchedMiddleware';
@@ -10,6 +10,7 @@ import {
   getFolderIdByName,
 } from './selectors/mail';
 import { accountLogout } from './thunks/accountLogout';
+import { Alias } from './types';
 
 export type ToFrom = { address: string; name?: string };
 
@@ -370,6 +371,13 @@ export const markAsUnread = createNodeCalloutAsyncThunk<
   MarkAsUnreadResponse
 >('email:markAsUnread');
 
+export type GetMessagesByAliasIdRequest = { id: Alias['aliasId'] };
+export type GetMessagesByAliasIdResponse = Array<LocalEmail>;
+export const getMessagesByAliasId = createNodeCalloutAsyncThunk<
+  GetMessagesByAliasIdRequest,
+  GetMessagesByAliasIdResponse
+>('email:getMessagesByAliasId');
+
 export type GetMessageByIdRequest = { id: string | number };
 export type GetMessageByIdResponse = any; //Array<LocalEmail>;
 export const getMessageById = createNodeCalloutAsyncThunk<
@@ -441,8 +449,12 @@ export const mailSlice = createSlice({
       state.mailbox = mailboxes[0];
     });
     builder.addCase(getMailboxFolders.fulfilled, (state, action) => {
-      const folders = action.payload;
-      state.folders = folders;
+      state.folders = action.payload;
+    });
+    builder.addCase(getMessagesByAliasId.fulfilled, (state, action) => {
+      action.payload.map(email => {
+        state.mail[email.emailId] = email;
+      });
     });
     builder.addCase(getMailByFolder.fulfilled, (state, action) => {
       const emails = action.payload;

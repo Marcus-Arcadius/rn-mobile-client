@@ -75,6 +75,14 @@ export const trashMailListSelector = createSelectorMailListForFolder(
   FolderName.trash,
 );
 
+export const aliasesMailListSelector = createSelector(
+  (state: RootState) => state.mail,
+  (state: RootState, aliasId: string) => aliasId,
+  (mails, aliasId) => {
+    return Object.values(mails.mail).filter(mail => mail.aliasId === aliasId);
+  },
+);
+
 export const filteredInboxMailListSelector = createSelector(
   [
     inboxMailListSelector,

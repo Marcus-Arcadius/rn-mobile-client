@@ -17,9 +17,11 @@ export const MailListHeader = (props: MailListHeaderProps) => {
         paddingBottom: spacing.lg,
         paddingHorizontal: spacing.md,
       }}>
-      <Text style={fonts.title2}>{props.title}</Text>
+      <Text style={fonts.title2} numberOfLines={1} ellipsizeMode="tail">
+        {props.title}
+      </Text>
       {!!props.subtitle && (
-        <Text style={[fonts.regular.regular, { color: colors.inkLighter }]}>
+        <Text style={[fonts.small.regular, { color: colors.inkLighter }]}>
           {props.subtitle}
         </Text>
       )}
