@@ -21,7 +21,7 @@ export const fileFetchedMiddleware: Middleware<{}, {}> =
       const email = transformEmail(data);
       // api.dispatch(mailSlice.actions.fileFetched(email));
       api.dispatch(
-        saveMailToDB({ messageType: 'Incoming', messages: [email] }),
+        saveMailToDB({ type: 'Incoming', messages: [email] }),
       );
     } else if (action.type === 'node/account:newMessage') {
       const data = action.data as NewMessagePayload;

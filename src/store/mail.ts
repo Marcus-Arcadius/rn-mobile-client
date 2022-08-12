@@ -220,7 +220,7 @@ export const saveDraft = createAsyncThunk(
   'flow/saveDraft',
   async (data: SaveDraftRequest, thunkAPI) => {
     const response = await thunkAPI.dispatch(
-      saveMailToDB({ messageType: 'Draft', messages: [data] }),
+      saveMailToDB({ type: 'Draft', messages: [data] }),
     );
     if (response.type === saveMailToDB.fulfilled.type) {
       return response.payload as SaveMailToDBResponse;
@@ -261,7 +261,7 @@ export const deleteMail = createNodeCalloutAsyncThunk<
 // no logic to prevent that today, and it could happen
 // if there is any interruption between inserting into DB and 'mark as synced' call succeeding
 export type SaveMailToDBRequest = {
-  messageType: 'Incoming' | 'Draft';
+  type: 'Incoming' | 'Draft';
   messages: Array<EmailDraft & { bodyAsText?: string; bodyAsHTML?: string }>;
 };
 export type SaveMailToDBResponse = {
@@ -425,7 +425,7 @@ export const mailSlice = createSlice({
         state.mail[email.emailId] = email;
         emailIds.push(email.emailId);
       }
-      if (action.meta.arg.messageType === 'Draft') {
+      if (action.meta.arg.type === 'Draft') {
         const draftsFolderId = getFolderIdByName(state, FolderName.drafts);
         if (draftsFolderId) {
           // todo: ordering?
@@ -434,7 +434,7 @@ export const mailSlice = createSlice({
             ...state.mailIdsForFolder[draftsFolderId],
           ];
         }
-      } else if (action.meta.arg.messageType === 'Incoming') {
+      } else if (action.meta.arg.type === 'Incoming') {
         for (const message of action.payload.msgArr) {
           const folderId = message.folderId;
           state.mailIdsForFolder[folderId] = [
