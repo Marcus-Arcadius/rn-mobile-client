@@ -6,7 +6,7 @@ import { Button } from '../../components/Button';
 import { colors } from '../../util/colors';
 import { fonts } from '../../util/fonts';
 import { Icon } from '../../components/Icon';
-import { EmailCell } from '../../components/EmailCell';
+import { EmailCell } from '../EmailCell/EmailCell';
 import { LocalEmail } from '../../store/mail';
 
 import styles from './styles';
@@ -19,8 +19,9 @@ export type MailListItem = {
 
 export type MailListProps = {
   navigation: NativeStackNavigationProp<any>;
-  renderNavigationTitle: () => React.ReactNode;
-  headerComponent: React.ComponentType<any> | React.ReactElement;
+  renderNavigationTitle?: () => React.ReactNode;
+  sectionHeader?: () => React.ReactElement;
+  headerComponent?: React.ComponentType<any> | React.ReactElement;
   items: Array<MailListItem>;
   loading?: boolean;
   refreshEnabled?: boolean;
@@ -47,23 +48,26 @@ export const MailList = ({
   disableUnreadFilters,
   setFilterOption,
   selectedFilterOption,
+  sectionHeader,
 }: MailListProps) => {
   const headerTitleAnimation = useRef(new Animated.Value(0)).current;
   useLayoutEffect(() => {
-    navigation.setOptions({
-      headerShadowVisible: false,
-      headerTitle: () => (
-        <Animated.View
-          style={{
-            opacity: headerTitleAnimation.interpolate({
-              inputRange: [0, 80, 120],
-              outputRange: [0, 0, 1],
-            }),
-          }}>
-          {renderNavigationTitle()}
-        </Animated.View>
-      ),
-    });
+    if (renderNavigationTitle) {
+      navigation.setOptions({
+        headerShadowVisible: false,
+        headerTitle: () => (
+          <Animated.View
+            style={{
+              opacity: headerTitleAnimation.interpolate({
+                inputRange: [0, 80, 120],
+                outputRange: [0, 0, 1],
+              }),
+            }}>
+            {renderNavigationTitle()}
+          </Animated.View>
+        ),
+      });
+    }
   }, [navigation]); // TODO: is this going to cause performance issues?
 
   const [isRefreshing, setIsRefreshing] = useState(false);
@@ -71,7 +75,7 @@ export const MailList = ({
   const onListRefresh = async () => {
     setIsRefreshing(true);
     try {
-      await onRefresh();
+      await onRefresh?.();
     } catch (e) {
       setIsRefreshing(false);
     }
@@ -137,7 +141,9 @@ export const MailList = ({
   );
 
   const renderSectionHeader = ({ section: { id, data } }) => {
-    if (id === 'MAIL') {
+    if (sectionHeader) {
+      return sectionHeader();
+    } else if (id === 'MAIL') {
       return renderFilterHeader();
     }
     return null;
@@ -148,18 +154,22 @@ export const MailList = ({
       style={styles.sectionContainer}
       sections={sectionListData}
       stickySectionHeadersEnabled={true}
-      onScroll={Animated.event(
-        [
-          {
-            nativeEvent: {
-              contentOffset: {
-                y: headerTitleAnimation,
-              },
-            },
-          },
-        ],
-        { useNativeDriver: true },
-      )}
+      onScroll={
+        renderNavigationTitle
+          ? Animated.event(
+              [
+                {
+                  nativeEvent: {
+                    contentOffset: {
+                      y: headerTitleAnimation,
+                    },
+                  },
+                },
+              ],
+              { useNativeDriver: true },
+            )
+          : undefined
+      }
       renderItem={renderItem}
       renderSectionHeader={renderSectionHeader}
       keyExtractor={(item, index) => item.id + index}

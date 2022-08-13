@@ -23,6 +23,8 @@ export const getFolderIdByName = (
   return foundFolder?.folderId || undefined;
 };
 
+export const foldersSelector = (state: RootState) => state.mail.folders;
+
 export const folderIdByNameSelector = (
   state: RootState,
   folderName: FolderName,

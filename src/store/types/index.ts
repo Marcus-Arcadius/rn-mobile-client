@@ -1,3 +1,5 @@
+import { LocalEmail } from '../mail';
+
 export type AliasNamespace = {
   disabled?: boolean;
   domain: string;
@@ -9,6 +11,7 @@ export type AliasNamespace = {
   updatedAt?: string;
   _id: string;
 };
+
 export type Alias = {
   aliasId: string;
   name: string;

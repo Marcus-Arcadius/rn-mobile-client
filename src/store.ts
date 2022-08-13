@@ -7,6 +7,7 @@ import { contactsReducer } from './store/contacts';
 import { mailReducer } from './store/mail';
 import { systemReducer } from './store/system';
 import { namespacesReducer } from './store/namespaces';
+import { searchReducer } from './store/search';
 
 export const store = configureStore({
   reducer: {
@@ -16,6 +17,7 @@ export const store = configureStore({
     contacts: contactsReducer,
     mail: mailReducer,
     system: systemReducer,
+    search: searchReducer,
   },
   middleware: getDefaultMiddleware =>
     getDefaultMiddleware()
